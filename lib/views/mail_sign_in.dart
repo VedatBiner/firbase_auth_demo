@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:provider/provider.dart';
@@ -226,10 +227,14 @@ class _EmailSignInPageState extends State<EmailSignInPage> {
                   final user = await Provider.of<Auth>(context, listen: false)
                       .createUserWitEmailAndPassword(
                           _emailController.text, _passwordController.text);
-                  print(user!.uid);
-                  print(user.emailVerified);
+                  if (!user!.emailVerified){
+                    await user.sendEmailVerification();
+                  }
+                  await _showMyDialog();
+                  setState(() {
+                    _formStatus = FormStatus.signIn;
+                  });
                 }
-
               },
               child: const Text("Kayıt"),
             ),
@@ -244,6 +249,34 @@ class _EmailSignInPageState extends State<EmailSignInPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Onay Gerekiyor'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text('Merhaba, lütfen mailinizi kontrol ediniz'),
+                Text('Onay linkini tıklayıp, tekrar giriş yapınız'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Anladım'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
