@@ -1,11 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../services/auth.dart';
-import '../views/sign_in_page.dart';
 import '../widgets/on_board.dart';
 
 Future<void> main() async {
