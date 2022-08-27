@@ -26,6 +26,17 @@ class _SignInPageState extends State<SignInPage> {
     });
   }
 
+  Future<void> _signInWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+    final user =
+        await Provider.of<Auth>(context, listen: false).signInWithGoogle();
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,23 +68,22 @@ class _SignInPageState extends State<SignInPage> {
             MyElevatedButton(
               color: Colors.yellowAccent,
               child: const Text("Sign In Email/Password"),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const EmailSignInPage(),
-                  ),
-                );
-              },
+              onPressed: () => _isLoading
+                  ? null
+                  : () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const EmailSignInPage(),
+                        ),
+                      );
+                    },
             ),
             const SizedBox(height: 10),
             MyElevatedButton(
               color: Colors.lightBlueAccent,
+              onPressed: () => _isLoading ? null : _signInWithGoogle,
               child: const Text("Google Sign In"),
-              onPressed: () async {
-                final user = await Provider.of<Auth>(context, listen: false)
-                    .signInWithGoogle();
-              },
             ),
           ],
         ),
