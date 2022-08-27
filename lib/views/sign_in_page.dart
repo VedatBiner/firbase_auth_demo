@@ -70,7 +70,10 @@ class _SignInPageState extends State<SignInPage> {
             MyElevatedButton(
               color: Colors.lightBlueAccent,
               child: const Text("Google Sign In"),
-              onPressed: () {},
+              onPressed: () async {
+                final user = await Provider.of<Auth>(context, listen: false)
+                    .signInWithGoogle();
+              },
             ),
           ],
         ),
@@ -78,4 +81,3 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 }
-
