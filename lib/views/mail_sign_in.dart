@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:provider/provider.dart';
@@ -308,19 +309,25 @@ class _EmailSignInPageState extends State<EmailSignInPage> {
             ),
             ElevatedButton(
               onPressed: () async {
-                if (_registerFormKey.currentState!.validate()) {
-                  final user = await Provider.of<Auth>(context, listen: false)
-                      .createUserWithEmailAndPassword(
-                          _emailController.text, _passwordController.text);
-                  if (!user!.emailVerified) {
-                    await user.sendEmailVerification();
+                try {
+                  if (_registerFormKey.currentState!.validate()) {
+                    final user = await Provider.of<Auth>(context, listen: false)
+                        .createUserWithEmailAndPassword(
+                        _emailController.text, _passwordController.text);
+                    if (!user!.emailVerified) {
+                      await user.sendEmailVerification();
+                    }
+                    await _showMyDialog();
+                    await Provider.of<Auth>(context, listen: false).signOut();
+                    setState(() {
+                      _formStatus = FormStatus.signIn;
+                    });
                   }
-                  await _showMyDialog();
-                  await Provider.of<Auth>(context, listen: false).signOut();
-                  setState(() {
-                    _formStatus = FormStatus.signIn;
-                  });
                 }
+                on FirebaseAuthException catch(e){
+                  print("Kayıt formu içinde hata yakalandı, ${e.message}");
+                }
+
               },
               child: const Text("Kayıt"),
             ),
